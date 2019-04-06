@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Sync Handshake config</title>
+<script type="text/javascript" src="//unpkg.com/vue"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.css">
+<script type="text/javascript" src="https://unpkg.com/vuejs-datepicker"></script>
+
+  
+
+<div id="app">
+  <div class="panel panel-default">
+  <div class="panel-heading">Sync Handshake</div>
+  <div class="panel-body">
+    <form>
+  <div class="form-group">
+    <label for="TimeoutInMinutes">Timeout In Minutes</label>
+    <input type="text" class="form-control" placeholder="Timeout In Minutes" v-model="TimeoutInMinutes" number>
+  </div>
+  <div class="form-group">
+    <label for="DelayTill">Delay Till</label>
+    <vuejs-datepicker :typeable="true" :use-utc="true" :format="formatDelayTill" :inline="false" v-model="DelayTill"></vuejs-datepicker>    
+  </div>
+  <div>Result</div>
+  <div @click="selectResult" style="padding:5px; border: 3px solid green;" id="result">{<span v-if="TimeoutInMinutes">"TimeoutInMinutes":{{TimeoutInMinutes}}</span><span v-if="TimeoutInMinutes && DelayTill">,</span><span v-if="DelayTill">"DelayTill":"{{formatDelayTill(DelayTill)}}"</span>}</div>
+  <div>
+  <div>Presets</div>
+  <button type="button" class="btn btn-default" @click="preset5Min">Every 5 Min</button>
+  <button type="button" class="btn btn-default" @click="presetTomorrow">No Sync Till Tomorrow 3:30PM</button>  
+  </div>
+</form>
+  </div>
+</div>
+</div>
+
+<script>
+var vm = new Vue({
+  el: "#app",
+  components: {
+  	vuejsDatepicker
+  },
+  data: {
+    TimeoutInMinutes:"",
+    DelayTill:""
+  },
+  methods: { 	
+  	formatDelayTill: (date)=>{
+        return date.toISOString();
+    },
+    selectResult:()=>{
+	window.getSelection().selectAllChildren(document.getElementById('result'));
+    },
+    clearSelection: () => {
+        if(document.selection && document.selection.empty) {
+            document.selection.empty();
+        } else if(window.getSelection) {
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+        }
+    },
+    preset5Min:() => {    	
+    	var me = vm;            
+    	me.TimeoutInMinutes=5;
+    	me.DelayTill=null; 
+      me.clearSelection();
+    },
+    presetTomorrow:()=>{      
+    	var me = vm;
+    	me.TimeoutInMinutes=null;
+      var now = new Date();
+    	me.DelayTill=new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 15, 30));
+      me.clearSelection();
+    }    
+  }
+})
+</script>
+
+</body>
+</html>
